@@ -29,7 +29,7 @@ RUN npm install
 RUN npm run clean && npm run build:alpine
 
 # The optimized docker image
-FROM microsoft/dotnet:2.1-runtime-alpine
+FROM microsoft/dotnet:2.2-runtime-alpine
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache nodejs nodejs-npm

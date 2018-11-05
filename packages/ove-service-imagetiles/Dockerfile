@@ -28,7 +28,7 @@ RUN npm install
 RUN npm run clean && npm run build
 
 # The optimized docker image
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
+FROM microsoft/dotnet:2.2-aspnetcore-runtime
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y gnupg
