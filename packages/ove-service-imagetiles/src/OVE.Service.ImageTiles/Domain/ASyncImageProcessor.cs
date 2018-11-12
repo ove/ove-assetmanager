@@ -144,7 +144,7 @@ namespace OVE.Service.ImageTiles.Domain {
                 _configuration.GetValue<string>(S3ClientAccessKey),
                 _configuration.GetValue<string>(S3ClientSecret),
                 new AmazonS3Config {
-                    ServiceURL = _configuration.GetValue<string>(S3ClientServiceUrl),
+                    ServiceURL = GetServiceUrl(),
                     UseHttp = true, 
                     ForcePathStyle = true
                 }
@@ -153,6 +153,13 @@ namespace OVE.Service.ImageTiles.Domain {
             return s3Client;
         }
 
+        private string GetServiceUrl() {
+            var serviceUrl = _configuration.GetValue<string>(S3ClientServiceUrl);
+            if (!serviceUrl.EndsWith('/')) {
+                serviceUrl += '/';
+            }
+            return serviceUrl;
+        }
 
         private async Task<bool> UploadDirectory(string file, OVEAssetModel asset) {
             _logger.LogInformation("about to upload directory " + file);

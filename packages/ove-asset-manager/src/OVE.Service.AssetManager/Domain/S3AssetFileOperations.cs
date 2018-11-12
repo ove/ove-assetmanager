@@ -34,7 +34,7 @@ namespace OVE.Service.AssetManager.Domain {
                 configuration.GetValue<string>(S3ClientAccessKey),
                 configuration.GetValue<string>(S3ClientSecret),
                 new AmazonS3Config {
-                    ServiceURL = configuration.GetValue<string>(S3ClientServiceUrl),
+                    ServiceURL = GetServiceUrl(),
                     UseHttp = true, 
                     ForcePathStyle = true
                 }
@@ -46,9 +46,17 @@ namespace OVE.Service.AssetManager.Domain {
         #region Implementation of IFileOperations
 
         public string ResolveFileUrl(OVEAssetModel asset) {
-            var url = _configuration.GetValue<string>(S3ClientServiceUrl)
+            var url = GetServiceUrl()
                       + asset.Project + "/" + asset.StorageLocation;
             return url;
+        }
+
+        private string GetServiceUrl() {
+            var serviceUrl = _configuration.GetValue<string>(S3ClientServiceUrl);
+            if (!serviceUrl.EndsWith('/')) {
+                serviceUrl += '/';
+            }
+            return serviceUrl;
         }
 
 #pragma warning disable 1998
