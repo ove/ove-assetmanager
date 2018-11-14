@@ -12,6 +12,8 @@ services:
 
   ovehub-ove-asset-manager:
     image: ovehub/ove-asset-manager:latest
+    depends_on:
+    - ovehub-ove-asset-db
     ports:
     - "80:80"
     environment:
@@ -24,6 +26,8 @@ services:
 
   ovehub-ove-service-imagetiles:
     image: ovehub/ove-service-imagetiles:latest
+    depends_on:
+    - ovehub-ove-asset-manager
     ports:
     - "8090:80"
     environment:
