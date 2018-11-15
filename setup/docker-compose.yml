@@ -4,6 +4,8 @@ services:
     image: mariadb
     ports:
     - "3306:3306"
+    volumes:
+      - "ovehub-ove-asset-db-data:/var/lib/mysql"
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: ""
@@ -36,3 +38,6 @@ services:
       s3Client__ServiceURL: ""
       AssetManagerHost: ""
       ServiceHostUrl: ""
+
+volumes:
+  ovehub-ove-asset-db-data:
