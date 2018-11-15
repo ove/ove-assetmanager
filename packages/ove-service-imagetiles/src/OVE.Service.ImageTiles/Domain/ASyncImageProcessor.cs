@@ -200,10 +200,11 @@ namespace OVE.Service.ImageTiles.Domain {
             if (!Directory.Exists(filepath)) {
                 _logger.LogInformation("Creating directory for images " + filepath);
                 Directory.CreateDirectory(filepath);
+
+                // wait for new folder to be writable
+                Thread.Sleep(3000);
             }
-
-            Thread.Sleep(3000);
-
+            
             return filepath;
         }
 
