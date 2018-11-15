@@ -26,7 +26,7 @@ Configuration of the service is achieved by modifying the ``Appsettings.json`` f
 
 ### Configuring S3
 
-In common with all S3 compatible object stores the following three properties are required and should be set as follows in ``appsettings.json` or overridden in environmental variables as discussed above.
+In common with all S3 compatible object stores the following three properties are required and should be set as follows in ``appsettings.json`` or overridden in environmental variables as discussed above.
 
 ```  
 "s3Client": {
