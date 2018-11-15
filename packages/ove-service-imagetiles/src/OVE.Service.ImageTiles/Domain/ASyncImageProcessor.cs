@@ -115,7 +115,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
         private async Task<bool> UpdateStatus(OVEAssetModel asset, ProcessingStates state, string errors = null) {
             
-            var url = _configuration.GetValue<string>("AssetManagerHost") +
+            var url = _configuration.GetValue<string>("AssetManagerHost").RemoveTrailingSlash() +
                       _configuration.GetValue<string>("SetStateApi") +
                       asset.Id + "/" + (int) state;
 
@@ -144,21 +144,13 @@ namespace OVE.Service.ImageTiles.Domain {
                 _configuration.GetValue<string>(S3ClientAccessKey),
                 _configuration.GetValue<string>(S3ClientSecret),
                 new AmazonS3Config {
-                    ServiceURL = GetServiceUrl(),
+                    ServiceURL = _configuration.GetValue<string>(S3ClientServiceUrl).EnsureTrailingSlash(),
                     UseHttp = true, 
                     ForcePathStyle = true
                 }
             );
             _logger.LogInformation("Created new S3 Client");
             return s3Client;
-        }
-
-        private string GetServiceUrl() {
-            var serviceUrl = _configuration.GetValue<string>(S3ClientServiceUrl);
-            if (!serviceUrl.EndsWith('/')) {
-                serviceUrl += '/';
-            }
-            return serviceUrl;
         }
 
         private async Task<bool> UploadDirectory(string file, OVEAssetModel asset) {
@@ -234,7 +226,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
         private async Task<string> GetAssetUri(OVEAssetModel asset) {
             
-            string url = _configuration.GetValue<string>("AssetManagerHost") +
+            string url = _configuration.GetValue<string>("AssetManagerHost").RemoveTrailingSlash() +
                          _configuration.GetValue<string>("AssetUrlApi") +
                          asset.Id;
 
@@ -252,7 +244,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
         private async Task<OVEAssetModel> FindAssetToProcess() {
             OVEAssetModel todo = null;
-            string url = _configuration.GetValue<string>("AssetManagerHost") +
+            string url = _configuration.GetValue<string>("AssetManagerHost").RemoveTrailingSlash() +
                          _configuration.GetValue<string>("WorkItemApi") +
                          _configuration.GetValue<string>("ServiceName") + ".json";
 
