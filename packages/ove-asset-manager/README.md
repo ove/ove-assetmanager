@@ -37,7 +37,7 @@ In common with all S3 compatible object stores the following three properties ar
  ```
  
 ### Configuring Maria DB
-The MariaDB configuration should be set as follows in ``appsettings.json` or overridden in environmental variables as discussed above. 
+The MariaDB configuration should be set as follows in `appsettings.json` or overridden in environmental variables as discussed above. 
 
 ```
   "MariaDB": { 
