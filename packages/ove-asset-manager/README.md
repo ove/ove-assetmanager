@@ -49,7 +49,7 @@ The MariaDB configuration should be set as follows in ``appsettings.json` or ove
 ## Using the Asset Manager
 
 Assets should be uploaded to the asset manager either through the web interface or posting to the `/OVEAssetModelController/Create/` API. 
-Asset URL's on the objectstore may be found via the `/OVEAssetModelController/GetAssetURL?project=X&File=Y` API or by ID on  
+Asset URL's on the objectstore may be found via the `/OVEAssetModelController/GetAssetURL?project=X&File=Y` API or by ID on  `/OVEAssetModelController/GetAssetURLbId?id=X`
 `/OVEAssetModelController/GetAssetURLbId?id=X`
 
 ## Versioning
