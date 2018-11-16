@@ -223,7 +223,7 @@ namespace OVE.Service.ImageTiles.Domain {
 
             _logger.LogInformation("Finished downloading to " + localFile);
 
-            return localFile.Replace("/",Path.DirectorySeparatorChar.ToString()).Replace("\\",Path.DirectorySeparatorChar.ToString());
+            return localFile.Replace('/',Path.DirectorySeparatorChar).Replace('\\',Path.DirectorySeparatorChar);
         }
 
         private async Task<string> GetAssetUri(OVEAssetModel asset) {
