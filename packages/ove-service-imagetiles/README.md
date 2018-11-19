@@ -1,7 +1,7 @@
 # Image Tile Service
 
 This service uses the [LibVips](https://jcupitt.github.io/libvips/) library via [NetVips](-vips/
-) to take Image based Assets and create [DeepZoom](https://en.wikipedia.org/wiki/Deep_Zoom) image tile sets.
+) to take Image based Assets and create [Deep Zoom](https://en.wikipedia.org/wiki/Deep_Zoom) image tile sets.
 
 
 ## Configuration
