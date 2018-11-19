@@ -1,7 +1,7 @@
 version: '3'
 services:
   ovehub-ove-asset-db:
-    image: mariadb
+    image: mariadb:10.3.10-bionic
     ports:
     - "3306:3306"
     volumes:
@@ -17,7 +17,7 @@ services:
     depends_on:
     - ovehub-ove-asset-db
     ports:
-    - "80:80"
+    - "8090:80"
     environment:
       s3Client__AccessKey: ""
       s3Client__Secret: ""
@@ -31,7 +31,7 @@ services:
     depends_on:
     - ovehub-ove-asset-manager
     ports:
-    - "8090:80"
+    - "8092:80"
     environment:
       s3Client__AccessKey: ""
       s3Client__Secret: ""
