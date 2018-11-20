@@ -201,8 +201,6 @@ namespace OVE.Service.ImageTiles.Domain {
                 Directory.CreateDirectory(filepath);
             }
 
-            Thread.Sleep(3000);
-
             return filepath;
         }
 
