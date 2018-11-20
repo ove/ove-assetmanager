@@ -62,7 +62,7 @@ namespace OVE.Service.AssetManager {
                             connected = true;// if no exception throw
                         }
                         catch (Exception e) {
-                            logger.LogCritical("Failed to open db connection - trying in 5sec "+e);
+                            logger.LogWarning("Failed to open db connection - trying in 5sec "+e);
                             Thread.Sleep(5000);
                         }
                     }
