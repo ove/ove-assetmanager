@@ -105,7 +105,7 @@ Initialisation, maintenance and updates to database structure are managed via da
 
 Internal processing microservices are implemented using the [**Hosted Service**](https://blogs.msdn.microsoft.com/cesardelatorre/2017/11/18/implementing-background-tasks-in-microservices-with-ihostedservice-and-the-backgroundservice-class-net-core-2-x/) pattern.
 
-A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for Entity Framwork and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
+A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for Entity Framework and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
 
 Full API documentation is achieved using code based [**XML documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
 
