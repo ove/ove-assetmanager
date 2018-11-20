@@ -97,12 +97,9 @@ namespace OVE.Service.ImageTiles {
         private async void RegisterServiceWithAssetManager() {
 
             // get the service description from the AppSettings.json 
-
             OVEService service = new OVEService();
             Configuration.Bind("Service", service);
-
-            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl") +
-                                    "/api/ImageController/ViewImage/?id={id}";
+            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() + "/api/ImageController/ViewImage/?id={id}"; 
 
             // then update the real processing states
             service.ProcessingStates.Clear();
@@ -111,13 +108,13 @@ namespace OVE.Service.ImageTiles {
             }
 
             // register the service
-
+          
             bool registered = false;
             while (!registered) {
                 string url = null;
                 try {
                     // permit environmental variables to be updated 
-                    url = Configuration.GetValue<string>("AssetManagerHostUrl") +
+                    url = Configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
                           Configuration.GetValue<string>("RegistrationApi");
 
                     Console.WriteLine("About to register with url " + url + " we are on " + service.ViewIFrameUrl);
@@ -129,8 +126,7 @@ namespace OVE.Service.ImageTiles {
 
                         registered = responseMessage.StatusCode == HttpStatusCode.OK;
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Console.WriteLine("Failed to register - exception was" + e);
                     registered = false;
                 }
@@ -177,6 +173,7 @@ namespace OVE.Service.ImageTiles {
             app.UseSwagger()
                 .UseSwaggerUI(c => {
                     c.SwaggerEndpoint("/swagger/" + _version + "/swagger.json", "TileService " + _version);
+                    c.RoutePrefix = "api-docs";
                 });
         }
     }
