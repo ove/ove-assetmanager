@@ -89,13 +89,13 @@ Optionally assets may have JSON metadata attached which can be updated via `GET`
 
 ## Implementation 
 
-The Asset Manager is implemented in [**C#**](https://github.com/dotnet/roslyn) and [**.net core 2.1**](https://blogs.msdn.microsoft.com/dotnet/2018/05/30/announcing-net-core-2-1/) and so runs cross platform. 
+The Asset Manager is implemented in [**C#**](https://github.com/dotnet/roslyn) and [**.NET Core 2.1**](https://blogs.msdn.microsoft.com/dotnet/2018/05/30/announcing-net-core-2-1/) and so runs cross platform. 
 
-[**OWIN** (Open Web Interface for .Net)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout, precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imports are completed via [**Nuget**](www.nuget.org) and are listed in the `.csproj` files. 
+[**OWIN** (Open Web Interface for .NET)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout, precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imports are completed via [**NuGet**](www.nuget.org) and are listed in the `.csproj` files. 
 
 The cross platform lightweight [**Kestrel**](https://github.com/aspnet/KestrelHttpServer) HTTP server is used. 
 
-The open source [**ASP.Net**](https://github.com/aspnet/AspNetCore) framework is used to create RESTful APIs, further the [**Asp.net MVC**](https://github.com/aspnet/Mvc) framework and is used to coordinate views, controllers and model state. Model state validation is enabled via a [**Validation Attributes**](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1) and is provided server-side and automatically provided client-side with [**JQuery**](https://jquery.com/). 
+The open source [**ASP.NET**](https://github.com/aspnet/AspNetCore) framework is used to create RESTful APIs, further the [**ASP.NET MVC**](https://github.com/aspnet/Mvc) framework and is used to coordinate views, controllers and model state. Model state validation is enabled via a [**Validation Attributes**](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1) and is provided server-side and automatically provided client-side with [**jQuery**](https://jquery.com/).
 
 The [**Entity Framework Core**](https://github.com/aspnet/EntityFrameworkCore) framework is used to manage models. [**Code first migrations and deployment**](https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/migrations-and-deployment-with-the-entity-framework-in-an-asp-net-mvc-application) together with [**Scaffolding**](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/hands-on-labs/aspnet-mvc-4-entity-framework-scaffolding-and-migrations) were initially used to generate CRUD templates. 
 
@@ -103,10 +103,10 @@ Initialisation, maintenance and updates to database structure are managed via da
 
 [**Razor**](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/razor?view=aspnetcore-2.1) is used for View generation. Styling is achieved via [**Bootstrap**](https://getbootstrap.com/docs/4.1/getting-started/introduction/). 
 
-Internal processing microservices are implemented using the [**HostedService**](https://blogs.msdn.microsoft.com/cesardelatorre/2017/11/18/implementing-background-tasks-in-microservices-with-ihostedservice-and-the-backgroundservice-class-net-core-2-x/) pattern.
+Internal processing microservices are implemented using the [**Hosted Service**](https://blogs.msdn.microsoft.com/cesardelatorre/2017/11/18/implementing-background-tasks-in-microservices-with-ihostedservice-and-the-backgroundservice-class-net-core-2-x/) pattern.
 
 A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for EntityFramwork and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
 
-Full API documentation is achieved using code based [**xml documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
+Full API documentation is achieved using code based [**XML documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
 
 **Asset Processing Services may be implemented in any language and interact with the Asset Manager using its APIs**. 
