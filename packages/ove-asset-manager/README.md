@@ -22,7 +22,7 @@ Assets will be stored on the object store on a one bucket per `Project` model. E
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically overwritten by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically overwritten by **Environment Variables** (reflection of the JSON hierarchy should be achieved using ``__`` e.g. ``s3Client__Secret``). 
 
 ### Configuring S3
 
@@ -107,6 +107,6 @@ Internal processing microservices are implemented using the [**HostedService**](
 
 A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for EntityFramwork and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
 
-Full API documentation is acheived using code based [**xml documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and ui which can be viewed on `/api-docs/`. 
+Full API documentation is achieved using code based [**xml documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
 
 **Asset processing microservices may be implemented in any language and interact with the asset manager using its APIs**. 
