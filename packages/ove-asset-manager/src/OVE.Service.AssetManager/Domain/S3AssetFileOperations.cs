@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.Models;
 using System.IO.Compression;
+using Newtonsoft.Json;
 
 namespace OVE.Service.AssetManager.Domain {
     public class S3AssetFileOperations : IAssetFileOperations {
@@ -137,6 +139,8 @@ namespace OVE.Service.AssetManager.Domain {
                         var files = await UnZipAsset(s3Client, asset, upload);
                         _logger.LogInformation("unzipped " + files + " files to the object store" +
                                                asset.StorageLocation);
+                        // save the meta data
+                        asset.AssetMeta = JsonConvert.SerializeObject(files);
                     }
                 }
 
@@ -150,10 +154,10 @@ namespace OVE.Service.AssetManager.Domain {
 
         }
 
-        private async Task<int> UnZipAsset(IAmazonS3 s3Client, OVEAssetModel asset, IFormFile upload) {
+        private async Task<List<string>> UnZipAsset(IAmazonS3 s3Client, OVEAssetModel asset, IFormFile upload) {
             string prefixFolder = asset.StorageLocation.Split("/").FirstOrDefault() + "/";
 
-            int filesUploaded = 0;
+            List<string> filesUploaded = new List<string>();
 
             using (var zipFile = upload.OpenReadStream()) {
                 var archive = new ZipArchive(zipFile);
@@ -169,7 +173,7 @@ namespace OVE.Service.AssetManager.Domain {
                         }
                     }
 
-                    filesUploaded++;
+                    filesUploaded.Add(location);
                 }
             }
 

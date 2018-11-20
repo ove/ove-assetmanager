@@ -315,7 +315,7 @@ namespace OVE.Service.AssetManager.Controllers {
         public async Task<IActionResult> Index() {
             return View(await _context.AssetModels.ToListAsync());
         }
-
+        
         /// <summary>
         /// Get Details of the asset by guid 
         /// assetModels/Details/5
