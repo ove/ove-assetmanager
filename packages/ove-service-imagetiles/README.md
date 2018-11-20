@@ -22,7 +22,7 @@ In common with all S3 compatible object stores the following three properties ar
 
 ```  
 "s3Client": {
-    "AccessKey": "secret",
+    "AccessKey": "key",
     "Secret": "secret",
     "ServiceURL": "host"
   }
