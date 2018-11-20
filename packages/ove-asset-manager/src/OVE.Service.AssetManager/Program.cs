@@ -61,8 +61,8 @@ namespace OVE.Service.AssetManager {
                             context.Database.OpenConnection();
                             connected = true;// if no exception throw
                         }
-                        catch (Exception e) {
-                            logger.LogWarning("Failed to open db connection - trying in 5sec "+e);
+                        catch (Exception) {
+                            logger.LogWarning("Failed to open db connection - trying in 5sec ");
                             Thread.Sleep(5000);
                         }
                     }
