@@ -8,11 +8,11 @@ The core service is the **Asset Manager**. This enables media and content to be 
 
 ## Asset Services
 
-A variety of other Asset Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then generally automatically process assets which require their services. For example the [**Image Tile Service**](https://github.com/ove/ove-asset-services/blob/master/packages/ove-service-imagetiles/README.MD) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
+A variety of other Asset Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then generally automatically process assets which require their services. For example the [**Image Tile Service**](https://github.com/ove/ove-asset-services/blob/master/packages/ove-service-imagetiles/README.md) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
 
 ## Scalability
 
-The system is intended to be scalable and many copies of the Asset Manager can be run - the EntityFramework and SQL database concurrency models ensure that the ``ProcessingState`` for each Asset is atomically updated despite running multiple instances. 
+The system is intended to be scalable and many copies of the Asset Manager can be run - the [Entity Framework](https://docs.microsoft.com/en-us/aspnet/entity-framework) and SQL database concurrency models ensure that the ``ProcessingState`` for each Asset is atomically updated despite running multiple instances. 
 
 The Asset Processing Microservices work on a pull based model - they will each independently regularly request further work. You are encouraged to run multiple copies of each Asset Processing Microservice: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
 
@@ -22,7 +22,7 @@ Assets will be stored on the object store on a one bucket per `Project` model. E
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically overwritten by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
 
 ### Configuring S3
 
@@ -37,7 +37,7 @@ In common with all S3 compatible object stores the following three properties ar
  ```
  
 ### Configuring Maria DB
-The [MariaDB](https://mariadb.org/) configuration should be set as follows in `appsettings.json` or overridden by ``Environment Variables`` as discussed above. 
+The [MariaDB](https://mariadb.org/) configuration should be set as follows in `appsettings.json` or overridden by **Environment Variables** as discussed above. 
 
 ```
   "MariaDB": { 
@@ -48,16 +48,16 @@ The [MariaDB](https://mariadb.org/) configuration should be set as follows in `a
 
 ## Using the Asset Manager
 
-Assets should be uploaded to the asset manager either through the web interface or submitting a HTTP `POST` request to the `/OVEAssetModelController/Create/` API. 
-Asset URLs on the object store may be found via the `/OVEAssetModelController/GetAssetURL?project=X&file=Y` API or by ID on  `/OVEAssetModelController/GetAssetURLbyId?id=X`
+Assets should be uploaded to the asset manager either through the web interface or submitting a HTTP `POST` request to the `/OVEAssetModelController/Create/` API route. 
+Asset URLs on the object store may be found via the `/OVEAssetModelController/GetAssetURL?project=X&file=Y` API route or by `ID` on  `/OVEAssetModelController/GetAssetURLbyId?id=X`
 
 ## Versioning
 
-The Asset Manager supports file versioning. The service will, unless otherwise specified, always provide the most recently uploaded/edited asset version when searching by Project and Asset Name. Previous versions may be found via the `/OVEAssetModelController/ListAssets/Project/` and `/OVEAssetModelController/ListAssets/Project/Name/` API's.
+The Asset Manager supports file versioning. The service will, unless otherwise specified, always provide the most recently uploaded/edited asset version when searching by Project and Asset Name. Previous versions may be found via the `/OVEAssetModelController/ListAssets/Project/` and `/OVEAssetModelController/ListAssets/Project/Name/` API routes.
 
 ## Processing state
 
-Asset Processing Services will update the ProcessingState of each asset using the ``/OVEAssetModelController/SetProcessingState/{id}/{state}/`` API. Assets in the unprocessed state (`0`) will be returned to processing microservices upon request. To reset the processing state of an asset and retry the processing you should use the ``/OVEAssetModelController/ResetProcessing/{id}`` of the Asset Manager API. A custom set of procesing states may be registered for every Asset Type. 
+Asset Processing Services will update the ProcessingState of each asset using the ``/OVEAssetModelController/SetProcessingState/{id}/{state}/`` API route. Assets in the unprocessed state (`0`) will be returned to processing microservices upon request. To reset the processing state of an asset and retry the processing you should use the ``/OVEAssetModelController/ResetProcessing/{id}`` route of the Asset Manager API. A custom set of processing states may be registered for every Asset Type. 
 
 ## Interaction of Processing Services and Asset Manager
 
@@ -85,7 +85,7 @@ The `viewIFrameUrl` is used to enable each service to provide a webpage for rend
 
 ## Asset Metadata
 
-Optionally assets may have JSON metadata attached which can be updated via `GET` / `POST` on `/OVEAssetModelController/AssetMeta/{id}`. This is intended to be entered programmatically by asset processing services. 
+Optionally assets may have JSON metadata attached which can be updated via `GET` / `POST` on `/OVEAssetModelController/AssetMeta/{id}`. This is intended to be entered programmatically by Asset Processing Services. 
 
 ## Implementation 
 
@@ -95,7 +95,7 @@ The Asset Manager is implemented in [**C#**](https://github.com/dotnet/roslyn) a
 
 The cross platform lightweight [**Kestrel**](https://github.com/aspnet/KestrelHttpServer) HTTP server is used. 
 
-The opensource [**ASP.Net**](https://github.com/aspnet/AspNetCore) framework is used to create RESTful APIs, further the [**Asp.net MVC**](https://github.com/aspnet/Mvc) framework and is used to coordinate views, controllers and model state. Model state validation is enabled via a [**Validation Attributes**](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1) and is provided server-side and automatically provided client-side with [**JQuery**](https://jquery.com/). 
+The open source [**ASP.Net**](https://github.com/aspnet/AspNetCore) framework is used to create RESTful APIs, further the [**Asp.net MVC**](https://github.com/aspnet/Mvc) framework and is used to coordinate views, controllers and model state. Model state validation is enabled via a [**Validation Attributes**](https://docs.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-2.1) and is provided server-side and automatically provided client-side with [**JQuery**](https://jquery.com/). 
 
 The [**Entity Framework Core**](https://github.com/aspnet/EntityFrameworkCore) framework is used to manage models. [**Code first migrations and deployment**](https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/migrations-and-deployment-with-the-entity-framework-in-an-asp-net-mvc-application) together with [**Scaffolding**](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/hands-on-labs/aspnet-mvc-4-entity-framework-scaffolding-and-migrations) were initially used to generate CRUD templates. 
 
