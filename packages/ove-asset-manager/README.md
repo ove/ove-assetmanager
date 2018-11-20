@@ -91,7 +91,7 @@ Optionally assets may have JSON metadata attached which can be updated via `GET`
 
 The Asset Manager is implemented in [**C#**](https://github.com/dotnet/roslyn) and [**.net core 2.1**](https://blogs.msdn.microsoft.com/dotnet/2018/05/30/announcing-net-core-2-1/) and so runs cross platform. 
 
-[**OWIN** (Open Web Interface for .Net)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout, precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imported are completed via [**Nuget**](www.nuget.org) and are listed in the `.csproj` files. 
+[**OWIN** (Open Web Interface for .Net)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout, precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imports are completed via [**Nuget**](www.nuget.org) and are listed in the `.csproj` files. 
 
 The cross platform lightweight [**Kestrel**](https://github.com/aspnet/KestrelHttpServer) HTTP server is used. 
 
