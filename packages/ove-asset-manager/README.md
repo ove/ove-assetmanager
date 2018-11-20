@@ -22,7 +22,7 @@ Assets will be stored on the object store on a one bucket per `Project` model. E
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically overwritten by **Environment Variables** (reflection of the JSON hierarchy should be achieved using ``__`` e.g. ``s3Client__Secret``). 
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically overridden by **Environment Variables** (reflection of the JSON hierarchy should be achieved using ``__`` e.g. ``s3Client__Secret``). 
 
 ### Configuring S3
 
