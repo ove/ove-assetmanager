@@ -14,7 +14,7 @@ A variety of other Asset Processing Services are provided to process assets into
 
 The system is intended to be scalable and many copies of the Asset Manager can be run - the [Entity Framework](https://docs.microsoft.com/en-us/aspnet/entity-framework) and SQL database concurrency models ensure that the ``ProcessingState`` for each Asset is atomically updated despite running multiple instances. 
 
-The Asset Processing Microservices work on a pull based model - they will each independently regularly request further work using a configurable poll interval. You are encouraged to run multiple copies of each Asset Processing Microservice: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
+The Asset Processing Services work on a pull based model - they will each independently regularly request further work using a configurable poll interval. You are encouraged to run multiple copies of each Asset Processing Service: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
 
 ## Storage Model
 
@@ -48,7 +48,7 @@ The [MariaDB](https://mariadb.org/) configuration should be set as follows in `a
 
 ## Using the Asset Manager
 
-Assets should be uploaded to the asset manager either through the web interface or submitting a HTTP `POST` request to the `/OVEAssetModelController/Create/` API route. 
+Assets should be uploaded to the Asset Manager either through the web interface or submitting a HTTP `POST` request to the `/OVEAssetModelController/Create/` API route. 
 Asset URLs on the object store may be found via the `/OVEAssetModelController/GetAssetURL?project=X&file=Y` API route or by `ID` on  `/OVEAssetModelController/GetAssetURLbyId?id=X`
 
 ## Versioning
@@ -57,11 +57,11 @@ The Asset Manager supports file versioning. The service will, unless otherwise s
 
 ## Processing state
 
-Asset Processing Services will update the ProcessingState of each asset using the ``/OVEAssetModelController/SetProcessingState/{id}/{state}/`` API route. Assets in the unprocessed state (`0`) will be returned to processing microservices upon request. To reset the processing state of an asset and retry the processing you should use the ``/OVEAssetModelController/ResetProcessing/{id}`` route of the Asset Manager API. A custom set of processing states may be registered for every Asset Type. 
+Asset Processing Services will update the ProcessingState of each asset using the ``/OVEAssetModelController/SetProcessingState/{id}/{state}/`` API route. Assets in the unprocessed state (`0`) will be returned to Asset Processing Services upon request. To reset the processing state of an asset and retry the processing you should use the ``/OVEAssetModelController/ResetProcessing/{id}`` route of the Asset Manager API. A custom set of processing states may be registered for every Asset Type. 
 
 ## Interaction of Processing Services and Asset Manager
 
-Since the Asset Manager has no knowledge of different asset types, how to process them or how to display them each asset processing microservice must register this knowledge with the Asset Manager. Each microservice should be configured with the URI of an asset manager with the `AssetManagerHostUrl` configuration property. These services will then register with the asset manager using the `/api/ServicesRegistry/Register` route to register a service description (see [here](https://github.com/ove/ove-asset-services/blob/master/packages/ove-asset-manager/src/OVE.Service.AssetManager/Domain/OVEService.cs)). 
+Since the Asset Manager has no knowledge of different asset types, how to process them or how to display them each Asset Processing Service must register this knowledge with the Asset Manager. Each service should be configured with the URI of an Asset Manager with the `AssetManagerHostUrl` configuration property. These services will then register with the Asset Manager using the `/api/ServicesRegistry/Register` route to register a service description (see [here](https://github.com/ove/ove-asset-services/blob/master/packages/ove-asset-manager/src/OVE.Service.AssetManager/Domain/OVEService.cs)). 
 
 ```
 {
@@ -77,11 +77,11 @@ Since the Asset Manager has no knowledge of different asset types, how to proces
 }
 ```
 
-The `fileTypes` are used for validation of uploads to the asset manager.
+The `fileTypes` are used for validation of uploads to the Asset Manager.
 
 The `processingStates` are used to provide meaningful status updates to users.
 
-The `viewIFrameUrl` is used to enable each service to provide a webpage for rendering an asset for display within the asset manager. This **must** include the string ``{id}`` which will be replaced with id of the asset. 
+The `viewIFrameUrl` is used to enable each service to provide a webpage for rendering an asset for display within the Asset Manager. This **must** include the string ``{id}`` which will be replaced with id of the asset. 
 
 ## Asset Metadata
 
@@ -109,4 +109,4 @@ A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/pr
 
 Full API documentation is achieved using code based [**xml documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
 
-**Asset processing microservices may be implemented in any language and interact with the asset manager using its APIs**. 
+**Asset Processing Services may be implemented in any language and interact with the Asset Manager using its APIs**. 
