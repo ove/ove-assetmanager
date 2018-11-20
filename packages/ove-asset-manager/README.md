@@ -1,20 +1,20 @@
 # OVE Asset Manager Services
 
-This collection of microservices provides end users with a simple way of managing and processing content to be displayed using OVE. 
+This collection of services provides end users with a simple way of managing and processing content to be displayed using OVE. 
 
 ## Asset Manager
 
-The core service is the **Asset Manager**. This enables media and content to be uploaded to an **S3** compatible **object store** and records metadata about its processing in an **SQL database**. A full user friendly website is provided to interact with the Asset Manager. A full RESTful API is provided for advanced users.  
+The core service is the **Asset Manager**. This enables media and content to be uploaded to an [**S3**](https://www.nuget.org/packages/Amazon.S3/) compatible **object store** and records metadata about its processing in an **SQL database**. A full user friendly website is provided to interact with the Asset Manager. A full RESTful API is provided for advanced users.  
 
 ## Asset Processing Services
 
-A variety of other Asset Processing Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then automatically process assets which require their services. For example the [**Image Tile Service**](../ove-service-imagetiles/README.md) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
+A variety of other Asset Processing Services are provided to process assets so that they can be displayed by OVE applications. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then automatically process assets which require their services. For example the [**Image Tile Service**](../ove-service-imagetiles/README.md) will create a Deep Zoom image (.dzi file) and the corresponding tileset from each image asset. 
 
 ## Scalability
 
 The system is intended to be scalable and many copies of the Asset Manager can be run - the [Entity Framework](https://docs.microsoft.com/en-us/aspnet/entity-framework) and SQL database concurrency models ensure that the ``ProcessingState`` for each Asset is atomically updated despite running multiple instances. 
 
-The Asset Processing Services work on a pull based model - they will each independently regularly request further work using a configurable poll interval. You are encouraged to run multiple copies of each Asset Processing Service: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
+The Asset Processing Services work on a pull model - they will each independently regularly request further work using a configurable poll interval. You are encouraged to run multiple copies of each Asset Processing Service: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
 
 ## Storage Model
 
@@ -91,7 +91,7 @@ Optionally assets may have JSON metadata attached which can be updated via `GET`
 
 The Asset Manager is implemented in [**C#**](https://github.com/dotnet/roslyn) and [**.NET Core 2.1**](https://blogs.msdn.microsoft.com/dotnet/2018/05/30/announcing-net-core-2-1/) and so runs cross platform. 
 
-[**OWIN** (Open Web Interface for .NET)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout, precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imports are completed via [**NuGet**](www.nuget.org) and are listed in the `.csproj` files. 
+[**OWIN** (Open Web Interface for .NET)](http://owin.org/) is used to decouple the web stack modules with **Dependency Injection** used throughout; precise configuration can be explored in `Program.cs` and `Startup.cs`. Module imports are completed via [**NuGet**](www.nuget.org) and are listed in the `.csproj` files.
 
 The cross platform lightweight [**Kestrel**](https://github.com/aspnet/KestrelHttpServer) HTTP server is used. 
 
@@ -105,8 +105,8 @@ Initialisation, maintenance and updates to database structure are managed via da
 
 Internal processing microservices are implemented using the [**Hosted Service**](https://blogs.msdn.microsoft.com/cesardelatorre/2017/11/18/implementing-background-tasks-in-microservices-with-ihostedservice-and-the-backgroundservice-class-net-core-2-x/) pattern.
 
-A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for EntityFramwork and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
+A variety of [**database adaptors**](https://docs.microsoft.com/en-us/ef/core/providers/) are available for Entity Framwork and can be swapped out easily if required, provided the concurrency restrictions are respected. Currently the Asset Manager uses the [**MariaDB**](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql) adaptor and the [**Amazon S3**](https://www.nuget.org/packages/Amazon.S3/) driver. 
 
 Full API documentation is achieved using code based [**XML documentation**](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc) and [**Swashbuckle**](https://github.com/domaindrivendev/Swashbuckle) to generate [**Swagger**](https://swagger.io/) documentation and UI which can be viewed on `/api-docs/`. 
 
-**Asset Processing Services may be implemented in any language and interact with the Asset Manager using its APIs**. 
+**Asset Processing Services may be implemented in any language as long as they interact with the Asset Manager using its APIs**.
