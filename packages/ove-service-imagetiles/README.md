@@ -5,7 +5,7 @@ This service uses the [LibVips](https://jcupitt.github.io/libvips/) library (via
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). The number of Assets to process concurrently may be configured by changing the ``ImageProcessingConfig__MaxConcurrent`` variable. The interval to poll the Asset Manager for new Assets to process may be configured under ``ImageProcessingConfig__PollSeconds``.
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarchy should be achieved using ``__`` e.g. ``s3Client__Secret``). The number of Assets to process concurrently may be configured by changing the ``ImageProcessingConfig__MaxConcurrent`` variable. The interval to poll the Asset Manager for new Assets to process may be configured under ``ImageProcessingConfig__PollSeconds``.
 
 ### Configuring the Service
 
