@@ -5,7 +5,7 @@ This service uses the [LibVips](https://jcupitt.github.io/libvips/) library via 
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the json hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
 
 ### Configuring Service
 
