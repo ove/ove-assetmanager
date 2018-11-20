@@ -18,7 +18,7 @@ You must provide the service with the URL of the asset manager it should registe
 
 ### Configuring S3
 
-In common with all S3 compatible object stores the following three properties are required and should be set as follows in `appsettings.json` or overridden by environment variables as discussed above.
+In common with all S3 compatible object stores the following three properties are required and should be set as follows in `appsettings.json` or overridden by **Environment Variables** as discussed above.
 
 ```  
 "s3Client": {
