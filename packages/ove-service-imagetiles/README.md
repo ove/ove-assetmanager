@@ -1,13 +1,13 @@
 # Image Tile Service
 
-This service uses the [LibVips](https://jcupitt.github.io/libvips/) library via [NetVips](https://github.com/kleisauke/net-vips) to take Image based Assets and create [Deep Zoom](https://en.wikipedia.org/wiki/Deep_Zoom) image tile sets.
+This service uses the [LibVips](https://jcupitt.github.io/libvips/) library (via the [NetVips](https://github.com/kleisauke/net-vips) bindings) to take Image based Assets and create [Deep Zoom](https://en.wikipedia.org/wiki/Deep_Zoom) image tile sets.
 
 
 ## Configuration
 
-Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). 
+Configuration of the service is achieved by modifying the ``appsettings.json`` file. These settings are automatically over written by **Environment Variables** (reflection of the JSON hierarcy should be acheived using ``__`` e.g. ``s3Client__Secret``). The number of Assets to process concurrently may be configured by changing the ``ImageProcessingConfig__MaxConcurrent`` variable. The interval to poll the Asset Manager for new Assets to process may be configured under ``ImageProcessingConfig__PollSeconds``.
 
-### Configuring Service
+### Configuring the Service
 
 You must provide the service with the URL of the asset manager it should register with. Further you should provide the final externally accessible URL of the service (used for callbacks from the Asset Manager). 
 

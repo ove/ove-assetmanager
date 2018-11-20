@@ -6,19 +6,19 @@ This collection of microservices provides end users with a simple way of managin
 
 The core service is the **Asset Manager**. This enables media and content to be uploaded to an **S3** compatible **object store** and records metadata about its processing in an **SQL database**. A full user friendly website is provided to interact with the Asset Manager. A full RESTful API is provided for advanced users.  
 
-## Asset Services
+## Asset Processing Services
 
-A variety of other Asset Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then generally automatically process assets which require their services. For example the [**Image Tile Service**](https://github.com/ove/ove-asset-services/blob/master/packages/ove-service-imagetiles/README.md) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
+A variety of other Asset Processing Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then automatically process assets which require their services. For example the [**Image Tile Service**](https://github.com/ove/ove-asset-services/blob/master/packages/ove-service-imagetiles/README.MD) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
 
 ## Scalability
 
 The system is intended to be scalable and many copies of the Asset Manager can be run - the [Entity Framework](https://docs.microsoft.com/en-us/aspnet/entity-framework) and SQL database concurrency models ensure that the ``ProcessingState`` for each Asset is atomically updated despite running multiple instances. 
 
-The Asset Processing Microservices work on a pull based model - they will each independently regularly request further work. You are encouraged to run multiple copies of each Asset Processing Microservice: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
+The Asset Processing Microservices work on a pull based model - they will each independently regularly request further work using a configurable poll interval. You are encouraged to run multiple copies of each Asset Processing Microservice: these should be configured to communicate with an instance of the Asset Manager. These services will then periodically check for Assets to process. Your database and object store may each scale independently. 
 
 ## Storage Model
 
-Assets will be stored on the object store on a one bucket per `Project` model. Every Asset is assigned a ``GUID`` on creation. This is used to identify it in the SQL database and on the object store. Within the Project bucket each Asset is uploaded to the root of a folder named by this ``GUID``. The filename of the asset will be preserved where possible - file names must consist of `a-z`,`A-Z`, `()`, `-` or `_` and be of length less than `1024` characters. Asset processing services are free to place processed files and folders anywhere within the asset directory. 
+Assets will be stored on the object store on a one bucket per `Project` model. Every Asset is assigned a ``GUID`` on creation. This is used to identify it in the SQL database and on the object store. Within the Project bucket each Asset is uploaded to the root of a folder named by this ``GUID``. The filename of the asset will be preserved where possible - file names must consist of `a-z`,`A-Z`, `()`, `-` or `_` and be of length less than `1024` characters. Asset Processing Services are free to place processed files and folders anywhere within the asset directory. 
 
 ## Configuration
 
@@ -26,7 +26,7 @@ Configuration of the service is achieved by modifying the ``appsettings.json`` f
 
 ### Configuring S3
 
-In common with all S3 compatible object stores the following three properties are required and should be set as follows in ``appsettings.json`` or overridden by ``environment variables`` as discussed above.
+In common with all S3 compatible object stores the following three properties are required and should be set as follows in ``appsettings.json`` or overridden by **Environment Variables** as discussed above.
 
 ```  
 "s3Client": {
