@@ -8,7 +8,7 @@ The core service is the **Asset Manager**. This enables media and content to be 
 
 ## Asset Processing Services
 
-A variety of other Asset Processing Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then automatically process assets which require their services. For example the [**Image Tile Service**](../ove-service-imagetiles/README.MD) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
+A variety of other Asset Processing Services are provided to process assets into a form advantageous for display using OVE. These services are generally headless and will automatically register themselves with an Asset Manager via its API. They will then automatically process assets which require their services. For example the [**Image Tile Service**](../ove-service-imagetiles/README.md) will create a Deep Zoom image (.dzi file) and corresponding tileset from each image asset. 
 
 ## Scalability
 
