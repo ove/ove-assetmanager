@@ -46,8 +46,8 @@ namespace OVE.Service.AssetManager {
 
             // make upload file size unlimited via gui (+ attribute on method to enable API unlimited)
             services.Configure<FormOptions>(x => {
-                x.ValueLengthLimit = int.MaxValue;
-                x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+                x.ValueLengthLimit =  (int) Math.Pow(2,32)-1;
+                x.MultipartBodyLengthLimit = (int) Math.Pow(2,32)-1; // In case of multipart
             });
 
             // dependency injection of domain classes 
@@ -108,10 +108,9 @@ namespace OVE.Service.AssetManager {
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //enable serving all file types (e.g. .dzi)
+            //set default content type
             app.UseStaticFiles(new StaticFileOptions {
-                ServeUnknownFileTypes = true,
-                DefaultContentType = "application/json"
+               DefaultContentType = "application/json"
             });
 
             // may not need
