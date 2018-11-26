@@ -1,0 +1,22 @@
+sudo: false
+language: node_js
+node_js: stable
+
+services:
+  - docker
+
+install: echo
+
+stages:
+  - test
+  - name: deploy
+    if: branch = master AND type != pull_request
+
+jobs:
+  include:
+    - stage: test
+      script: .travis/build-all.sh
+    # - stage: deploy
+    #   script:
+    #     - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin 
+    #     - ./build.sh --push -v unstable
