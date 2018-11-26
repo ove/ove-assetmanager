@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
-using OVE.Service.AssetManager.Models;
+using OVE.Service.Core.Assets;
+using OVE.Service.Core.FileOperations;
 
 namespace OVE.Service.AssetManager.Controllers {
 

@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using OVE.Service.Core.Extensions;
+using OVE.Service.Core.Processing.Service;
+using OVE.Service.Core.Services;
 using OVE.Service.ImageTiles.Domain;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -29,9 +27,9 @@ namespace OVE.Service.ImageTiles {
 
         internal static void GetVersionNumber() {
             // read version from package.json
-            var packagejson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
-            if (File.Exists(packagejson)) {
-                var package = JObject.Parse(File.ReadAllText(packagejson));
+            var packageJson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
+            if (File.Exists(packageJson)) {
+                var package = JObject.Parse(File.ReadAllText(packageJson));
                 _version = package["version"].ToString();
             }
         }
@@ -52,7 +50,7 @@ namespace OVE.Service.ImageTiles {
             });
 
             //start the processor microservice 
-            services.AddHostedService<ASyncImageProcessor>();
+            services.AddHostedService<AssetProcessingService<ImageProcessor,ImageProcessingStates>>();
 
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
@@ -103,7 +101,7 @@ namespace OVE.Service.ImageTiles {
 
             // then update the real processing states
             service.ProcessingStates.Clear();
-            foreach (var state in Enum.GetValues(typeof(ProcessingStates))) {
+            foreach (var state in Enum.GetValues(typeof(ImageProcessingStates))) {
                 service.ProcessingStates.Add(((int) state).ToString(), state.ToString());
             }
 

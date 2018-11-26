@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,11 +10,10 @@ using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OVE.Service.AssetManager.Models;
-using System.IO.Compression;
-using Newtonsoft.Json;
+using OVE.Service.Core.Assets;
+using OVE.Service.Core.Extensions;
 
-namespace OVE.Service.AssetManager.Domain {
+namespace OVE.Service.Core.FileOperations.S3 {
     public class S3AssetFileOperations : IAssetFileOperations {
 
         private readonly ILogger<S3AssetFileOperations> _logger;
@@ -103,9 +101,9 @@ namespace OVE.Service.AssetManager.Domain {
             _logger.LogInformation("about to upload " + asset);
 
             // set up the filename            
-            var ext = ValidateExtension(Path.GetExtension(upload.FileName).ToLower());
+            var ext = SanitizeExtension(Path.GetExtension(upload.FileName).ToLower());
             asset.StorageLocation = Guid.NewGuid() + "/" +
-                                    S3Sanitize(Path.GetFileNameWithoutExtension(upload.FileName), ext) + ext;
+                                    SanitizeFilename(Path.GetFileNameWithoutExtension(upload.FileName), ext) + ext;
 
             try {
 
@@ -133,15 +131,6 @@ namespace OVE.Service.AssetManager.Domain {
                     // upload the asset
                     await Upload(s3Client, asset.Project, asset.StorageLocation, upload);
 
-                    // is it a zip file? 
-                    if (asset.StorageLocation.EndsWith(".zip")) {
-                        _logger.LogInformation("about to unzip and asset " + asset.StorageLocation);
-                        var files = await UnZipAsset(s3Client, asset, upload);
-                        _logger.LogInformation("unzipped " + files + " files to the object store" +
-                                               asset.StorageLocation);
-                        // save the meta data
-                        asset.AssetMeta = JsonConvert.SerializeObject(files);
-                    }
                 }
 
                 _logger.LogInformation("uploaded " + asset);
@@ -154,49 +143,58 @@ namespace OVE.Service.AssetManager.Domain {
 
         }
 
-        private async Task<List<string>> UnZipAsset(IAmazonS3 s3Client, OVEAssetModel asset, IFormFile upload) {
-            string prefixFolder = asset.StorageLocation.Split("/").FirstOrDefault() + "/";
+        public async Task<bool> UploadDirectory(string file, OVEAssetModel asset) {
+            _logger.LogInformation("about to upload directory " + file);
 
-            List<string> filesUploaded = new List<string>();
+            using (var fileTransferUtility = new TransferUtility(GetS3Client(_configuration))) {
 
-            using (var zipFile = upload.OpenReadStream()) {
-                var archive = new ZipArchive(zipFile);
-                foreach (var entry in archive.Entries.Where(f => f.FullName.Contains("."))) {
-                    // only files
-                    var location = UnzipLocation(entry.FullName, prefixFolder);
+                // upload the .dzi file
+                var assetRootFolder = Path.GetDirectoryName(asset.StorageLocation);
 
-                    using (var file = entry.Open()) {
-                        //raw unzipped streams do not have length so copy to memory stream
-                        using (var ms = new MemoryStream()) {
-                            await file.CopyToAsync(ms);
-                            await Upload(s3Client, asset.Project, location, ms);
-                        }
-                    }
+                var fileDirectory = Path.ChangeExtension(file, ".dzi").Replace(".dzi", "_files");
 
-                    filesUploaded.Add(location);
-                }
+                var filesKeyPrefix =
+                    assetRootFolder + "/" + new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
+
+                TransferUtilityUploadRequest req = new TransferUtilityUploadRequest() {
+                    BucketName = asset.Project,
+                    Key = Path.ChangeExtension(asset.StorageLocation, ".dzi"),
+                    FilePath = Path.ChangeExtension(file, ".dzi")
+
+                };
+                await fileTransferUtility.UploadAsync(req);
+
+                // upload the tile files 
+
+                TransferUtilityUploadDirectoryRequest request =
+                    new TransferUtilityUploadDirectoryRequest() {
+                        KeyPrefix = filesKeyPrefix,
+                        Directory = fileDirectory,
+                        BucketName = asset.Project,
+                        SearchOption = SearchOption.AllDirectories,
+                        SearchPattern = "*.*"
+                    };
+
+                await fileTransferUtility.UploadDirectoryAsync(request);
+
+                _logger.LogInformation("finished upload for "+file);
+
+                return true;
             }
-
-            return filesUploaded;
         }
 
-        private string UnzipLocation(string entry, string prefixFolder) {
-            var originalExt = Path.GetExtension(entry);
-            var ext = ValidateExtension(originalExt.ToLower());
-            var location = prefixFolder + S3Sanitize(entry.Replace(originalExt, ""), ext) + ext;
-            return location;
+        public async Task Upload(string bucketName, string assetStorageLocation, Stream file) {
+            await Upload(GetS3Client(_configuration), bucketName, assetStorageLocation, file);
         }
 
-        private async Task Upload(IAmazonS3 s3Client, string bucketName, string assetStorageLocation,
-            IFormFile upload) {
+       private async Task Upload(IAmazonS3 s3Client, string bucketName, string assetStorageLocation,IFormFile upload) {
             // open and upload it 
             using (var file = upload.OpenReadStream()) {
                 await Upload(s3Client, bucketName, assetStorageLocation, file);
             }
         }
 
-        private async Task Upload(IAmazonS3 s3Client, string bucketName, string assetStorageLocation,
-            Stream file) {
+        private async Task Upload(IAmazonS3 s3Client, string bucketName, string assetStorageLocation, Stream file) {
             using (var fileTransferUtility = new TransferUtility(s3Client)) {
                 // upload the file 
                 await fileTransferUtility.UploadAsync(file, bucketName, assetStorageLocation);
@@ -209,7 +207,7 @@ namespace OVE.Service.AssetManager.Domain {
         /// </summary>
         /// <param name="input">input</param>
         /// <returns>sanitized version</returns>
-        private string ValidateExtension(string input) {
+        public string SanitizeExtension(string input) {
             // filter to valid chars 
             Regex r = new Regex("^[a-zA-Z0-9]+$");
             input = input.Where(l => r.IsMatch(l.ToString())).Aggregate("", (acc, c) => acc + c);
@@ -225,7 +223,7 @@ namespace OVE.Service.AssetManager.Domain {
         /// <param name="input">input file name</param>
         /// <param name="extension">file extension</param>
         /// <returns>sanitized version</returns>
-        private string S3Sanitize(string input, string extension) {
+        public string SanitizeFilename(string input, string extension) {
             try {
 
                 if (string.IsNullOrWhiteSpace(input)) {

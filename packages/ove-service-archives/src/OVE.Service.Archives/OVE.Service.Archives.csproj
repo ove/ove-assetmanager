@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.24.1" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.28" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.6" />
@@ -31,7 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Archive\ViewArchive.cshtml">
+    <ProjectReference Include="..\..\..\ove-asset-core\src\OVE.Service.Core\OVE.Service.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Archive\ArchiveDetails.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

@@ -1,12 +1,11 @@
 ﻿namespace OVE.Service.Archives.Domain {
 
-    public enum ProcessingStates {
+    public enum ArchiveProcessingStates {
         Error = -1,
         Unprocessed = 0,
         Processing = 1,
-        CreatingDZI = 2,
-        Uploading = 3,
-        Processed = 4
+        Uploading = 2,
+        Processed = 3
     }
 
 }

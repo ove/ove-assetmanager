@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using OVE.Service.Archives.Domain;
 using OVE.Service.Archives.Models;
+using OVE.Service.AssetManager.Domain;
+using OVE.Service.Core.Assets;
+using OVE.Service.Core.Extensions;
 
 namespace OVE.Service.Archives.Controllers {
     /// <summary>
@@ -25,82 +29,94 @@ namespace OVE.Service.Archives.Controllers {
         }
 
         /// <summary>
-        /// return a HTML view of the image
+        /// return a list of the files within the archive.
         /// </summary>
-        /// <param name="id">id of the asset</param>
-        /// <returns></returns>
+        /// <param name="id">the asset id</param>
+        /// <returns>a json list of the asset files</returns>
         [HttpGet]
-        [Route("/api/ArchiveController/ViewArchive/")]
-        public async Task<IActionResult> ViewArchive(string id) {
-            return View(new ArchiveViewModel {
-                Id = id, 
-                AssetUrl = await GetAssetUrl(id),
-                Files = (await GetDZIbyId(id))
-            });
-        }
-
-        /// <summary>
-        /// Return of the archive file list
-        /// </summary>
-        /// <param name="project">project the asset belongs to</param>
-        /// <param name="name">name of the asset</param>
-        /// <returns>a list of files within the archive or No Content if not processed yet</returns>
-        [HttpGet]
-        [Route("/api/ArchiveController/GetFilebyProjectName/")]
-        public async Task<ActionResult<string>> GetFilebyProjectName(string project, string name) {
-
-            string id = await FindAssetById(project, name);
-            if (string.IsNullOrWhiteSpace(id)) {
+        [Route("/api/ArchiveController/Details/{id}.{format?}")]
+        public async Task<ActionResult<string>> GetArchiveContents(string id) {
+            if (id == null) {
                 return NotFound();
             }
 
-            return await GetDZIbyId(id);
+            if (await GetAssetStatus(id) != ArchiveProcessingStates.Processed) {
+                return NoContent();
+            }
+
+            var assetModel = await GetAssetById(id);
+
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            return this.FormatOrView(assetModel.AssetMeta);
         }
 
-        private async Task<string> FindAssetById(string project, string name) {
-            string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
-                         _configuration.GetValue<string>("GetAssetByProjectName") +
-                         "?project=" + project + "&name=" + name;
+        /// <summary>
+        /// return a view of what is within the archive 
+        /// </summary>
+        /// <param name="id">id of the asset</param>
+        /// <returns>view of the archive</returns>
+        [HttpGet]
+        [Route("/api/ArchiveController/ViewDetails/{id}.{format?}")]
+        public async Task<ActionResult> ArchiveDetails(string id) {
+            if (id == null) {
+                return NotFound();
+            }
 
-            _logger.LogInformation("about to get on " + url);
+            if (await GetAssetStatus(id) != ArchiveProcessingStates.Processed) {
+                return NoContent();
+            }
+
+            var assetModel = await GetAssetById(id);
+
+            if (assetModel == null) {
+                return NotFound();
+            }
+
+            var url = await GetAssetUri(assetModel);
+
+            var files = JsonConvert.DeserializeObject<List<string>>(assetModel.AssetMeta);
+
+            var avm = new ArchiveViewModel {
+                Id = assetModel.Id,
+                AssetUrl = url,
+                RootFile = assetModel.StorageLocation,
+                Files = files
+            };
+
+            return View(avm);
+        }
+
+        public async Task<string> GetAssetUri(OVEAssetModel asset) {
+
+            string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
+                         _configuration.GetValue<string>("AssetUrlApi") +
+                         asset.Id;
 
             using (var client = new HttpClient()) {
                 var responseMessage = await client.GetAsync(url);
                 if (responseMessage.StatusCode == HttpStatusCode.OK) {
                     var assetString = await responseMessage.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrWhiteSpace(assetString)) {
-                        return assetString.Replace("\"", "");
-                    }
+                    _logger.LogInformation("About to download asset from url " + assetString);
+                    return assetString;
                 }
             }
 
-            return null;
+            throw new Exception("Failed to get download URL for asset");
         }
 
-        /// <summary>
-        /// Return the URL of the dzi file if it has been processed 
-        /// </summary>
-        /// <param name="id">id of the asset</param>
-        /// <returns>url of dzi file or No Content if not processed yet</returns>
-        [HttpGet]
-        [Route("/api/ImageController/GetDZIFile/{id}")]
-        public async Task<ActionResult<string>> GetDZIbyId(string id) {
+        private async Task<ArchiveProcessingStates> GetAssetStatus(string id) {
+            var res = await GetAssetById(id);
 
-            if ((await GetAssetStatus(id)) != ProcessingStates.Processed) {
-                return NoContent();
-            }
-
-            string url = await GetAssetUrl(id);
-            if (string.IsNullOrWhiteSpace(url)) {
-                return NotFound();
-            }
-
-            var dzi = url.Substring(0, url.LastIndexOf('.'));
-            dzi += ".dzi";
-            return dzi;
+            string state = res.ProcessingState.ToString();
+            return state != null && Enum.TryParse(state, out ArchiveProcessingStates assetState)
+                ? assetState
+                : ArchiveProcessingStates.Error;
         }
 
-        private async Task<ProcessingStates> GetAssetStatus(string id) {
+        private async Task<OVEAssetModel> GetAssetById(string id) {
             string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
                          _configuration.GetValue<string>("GetAssetByIdApi") +
                          id + ".json";
@@ -112,31 +128,7 @@ namespace OVE.Service.Archives.Controllers {
                 if (responseMessage.StatusCode == HttpStatusCode.OK) {
                     var assetString = await responseMessage.Content.ReadAsStringAsync();
                     if (!string.IsNullOrWhiteSpace(assetString)) {
-                        var asset = JObject.Parse(assetString);
-                        string state = asset["processingState"].ToString();
-                        if (Enum.TryParse(state, out ProcessingStates assetState)) {
-                            return assetState;
-                        }
-                    }
-                }
-            }
-
-            return ProcessingStates.Error;
-        }
-
-        private async Task<string> GetAssetUrl(string id) {
-            string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
-                         _configuration.GetValue<string>("AssetUrlApi") +
-                         id;
-
-            _logger.LogInformation("about to get on " + url);
-
-            using (var client = new HttpClient()) {
-                var responseMessage = await client.GetAsync(url);
-                if (responseMessage.StatusCode == HttpStatusCode.OK) {
-                    var assetString = await responseMessage.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrWhiteSpace(assetString)) {
-                        return assetString;
+                        return JsonConvert.DeserializeObject<OVEAssetModel>(assetString);
                     }
                 }
             }

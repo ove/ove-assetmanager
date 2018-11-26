@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
+using OVE.Service.Core.FileOperations;
+using OVE.Service.Core.FileOperations.S3;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Swashbuckle.AspNetCore.Swagger;
 

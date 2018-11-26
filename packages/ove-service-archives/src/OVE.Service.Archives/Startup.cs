@@ -11,6 +11,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OVE.Service.Archives.Domain;
+using OVE.Service.Core.Extensions;
+using OVE.Service.Core.FileOperations;
+using OVE.Service.Core.FileOperations.S3;
+using OVE.Service.Core.Processing.Service;
+using OVE.Service.Core.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace OVE.Service.Archives {
@@ -24,9 +29,9 @@ namespace OVE.Service.Archives {
 
         internal static void GetVersionNumber() {
             // read version from package.json
-            var packagejson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
-            if (File.Exists(packagejson)) {
-                var package = JObject.Parse(File.ReadAllText(packagejson));
+            var packageJson = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"package.json");
+            if (File.Exists(packageJson)) {
+                var package = JObject.Parse(File.ReadAllText(packageJson));
                 _version = package["version"].ToString();
             }
         }
@@ -47,10 +52,11 @@ namespace OVE.Service.Archives {
             });
 
             //start the processor microservice 
-            services.AddHostedService<ArchiveProcessor>();
+            services.AddHostedService<AssetProcessingService<ArchiveProcessor,ArchiveProcessingStates>>();
 
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
+            services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
 
             // use mvc
             services.AddMvc()
@@ -63,10 +69,10 @@ namespace OVE.Service.Archives {
             services.AddSwaggerGen(options => {
 
                 options.SwaggerDoc(_version, new Info {
-                    Title = "OVE Image Tile Microservice",
+                    Title = "OVE Archive Microservice",
                     Version = _version,
                     Description =
-                        "The OVE Image Tile Microservice is used to process Image assets to produce tile services from them. " +
+                        "The OVE Archive Microservice is used to unzip archive assets to produce accessible files from them. " +
                         "This works within the OVE (Open Visualization Environment) is an open-source software stack, " +
                         "designed to be used in large scale visualization environments like the [Imperial College](http://www.imperial.ac.uk) " +
                         "[Data Science Institute\'s](http://www.imperial.ac.uk/data-science/) [Data Observatory](http://www.imperial.ac.uk/data-science/data-observatory/). " +
@@ -78,7 +84,7 @@ namespace OVE.Service.Archives {
 
 
                 });
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"OVE.Service.ImageTiles.xml");
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"OVE.Service.Archives.xml");
                 options.IncludeXmlComments(filePath);
                 options.DescribeAllEnumsAsStrings();
             });
@@ -97,7 +103,7 @@ namespace OVE.Service.Archives {
 
             // then update the real processing states
             service.ProcessingStates.Clear();
-            foreach (var state in Enum.GetValues(typeof(ProcessingStates))) {
+            foreach (var state in Enum.GetValues(typeof(ArchiveProcessingStates))) {
                 service.ProcessingStates.Add(((int) state).ToString(), state.ToString());
             }
 
