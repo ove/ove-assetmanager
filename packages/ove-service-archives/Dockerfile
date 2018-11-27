@@ -1,5 +1,4 @@
 FROM node:10-stretch as builder
-WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install apt-transport-https
 
@@ -20,7 +19,10 @@ RUN npm install -global npx
 RUN npm install -global pm2
 
 # Bundle app source
-COPY . .
+WORKDIR /usr/src
+COPY ove-asset-core ove-asset-core
+COPY ove-service-archives ove-service-archives
+WORKDIR /usr/src/ove-service-archives
 
 RUN npm install
 
@@ -28,20 +30,16 @@ RUN npm install
 RUN npm run clean && npm run build
 
 # The optimized docker image
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
-WORKDIR /usr/src/app
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine
+WORKDIR /usr/src/ove-service-archives
 
-RUN apt-get update && apt-get install -y gnupg
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get update && apt-get install -y nodejs
+RUN apk add --no-cache nodejs nodejs-npm
 
 RUN npm install -global pm2
 
-COPY --from=builder /usr/src/app/dist/ ./dist/
-COPY --from=builder /usr/src/app/pm2.json .
-COPY --from=builder /usr/src/app/package.json .
-
-EXPOSE 80
+COPY --from=builder /usr/src/ove-service-archives/dist/ ./dist/
+COPY --from=builder /usr/src/ove-service-archives/pm2.json .
+COPY --from=builder /usr/src/ove-service-archives/package.json .
 
 CMD [ "pm2-runtime", "pm2.json" ]
 

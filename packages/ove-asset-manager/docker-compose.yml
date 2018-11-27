@@ -2,7 +2,9 @@ version: '3'
 services:
   ovehub-ove-asset-manager:
     image: ovehub/ove-asset-manager:${SERVICE_VERSION}
-    build: .
+    build: 
+      context: ../
+      dockerfile: ove-asset-manager/Dockerfile
     ports:
     - "8181:8181"
     environment:
