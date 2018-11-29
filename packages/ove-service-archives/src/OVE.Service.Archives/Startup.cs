@@ -51,14 +51,15 @@ namespace OVE.Service.Archives {
                 x.ValueLengthLimit = int.MaxValue;
                 x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
             });
-
-            //start the processor microservice 
-            services.AddHostedService<AssetProcessingService<ArchiveProcessor,ArchiveProcessingStates>>();
-
+            
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
             services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
             services.AddTransient<ArchiveProcessor>();
+            
+            //start the processor microservice 
+            services.AddHostedService<AssetProcessingService<ArchiveProcessor,ArchiveProcessingStates>>();
+
             // use mvc
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)

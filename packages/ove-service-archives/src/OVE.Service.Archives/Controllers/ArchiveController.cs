@@ -89,7 +89,7 @@ namespace OVE.Service.Archives.Controllers {
             return View(avm);
         }
 
-        public async Task<string> GetAssetUri(OVEAssetModel asset) {
+        private async Task<string> GetAssetUri(OVEAssetModel asset) {
 
             string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
                          _configuration.GetValue<string>("AssetUrlApi") +

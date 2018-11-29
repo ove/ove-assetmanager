@@ -96,15 +96,18 @@ namespace OVE.Service.Core.Processing.Service {
 
                     await _processor.Process(this, asset);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
                 _logger.LogError(e, "Exception in Asset Processing");
-                if (asset != null) {
-                    await UpdateStatus(asset, ProcessingErrorState, e.ToString());
+                try {
+
+                    if (asset != null) {
+                        await UpdateStatus(asset, ProcessingErrorState, e.ToString());
+                    }
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "Exception in Asset Processing");
                 }
-            }
-            finally {
+            } finally {
                 _processing.Release();
             }
 

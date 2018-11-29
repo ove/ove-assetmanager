@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OVE.Service.Core.Extensions;
+using OVE.Service.Core.FileOperations;
+using OVE.Service.Core.FileOperations.S3;
 using OVE.Service.Core.Processing.Service;
 using OVE.Service.Core.Services;
 using OVE.Service.ImageTiles.Domain;
@@ -49,12 +51,13 @@ namespace OVE.Service.ImageTiles {
                 x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
             });
 
-            //start the processor microservice 
-            services.AddHostedService<AssetProcessingService<ImageProcessor,ImageProcessingStates>>();
-
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
             services.AddTransient<ImageProcessor>();
+            services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
+
+            //start the processor microservice 
+            services.AddHostedService<AssetProcessingService<ImageProcessor,ImageProcessingStates>>();
 
             // use mvc
             services.AddMvc()
