@@ -9,7 +9,7 @@ function deactivate_env {
 }
 
 function display_help() {
-  echo "Build image for ove-asset-manager"
+  echo "Build image for ove-service-archives"
   echo
   echo "usage: build.sh [option]..."
   echo "   --push            Push the image"
