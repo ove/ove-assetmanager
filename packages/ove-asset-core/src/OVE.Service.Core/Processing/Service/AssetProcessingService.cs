@@ -67,13 +67,7 @@ namespace OVE.Service.Core.Processing.Service {
         }
 
         /// <summary>
-        /// Steps to process an asset:
-        /// 1) Get the asset to process
-        /// 2) Download it
-        /// 3) Call the actual processing 
-        /// 4) Upload it
-        /// 5) Mark it as completed
-        /// 
+        /// This method calls the asset manger seek an asset to process
         /// </summary>
         /// <param name="state"></param>
         private async void ProcessAsset(object state) {
@@ -88,17 +82,17 @@ namespace OVE.Service.Core.Processing.Service {
                 asset = await FindAssetToProcess();
 
                 if (asset == null) {
-                    _logger.LogInformation("no work for an asset Processor, running Processors = " +
+                    _logger.LogWarning("no work for an asset Processor, running Processors = " +
                                            (_maxConcurrent - _processing.CurrentCount - 1));
-                }
-                else {
-                    _logger.LogInformation("Found asset " + asset.Id);
+                } else {
+                    _logger.LogWarning("Found asset " + asset.Id);
 
                     await _processor.Process(this, asset);
                 }
             } catch (Exception e) {
 
                 _logger.LogError(e, "Exception in Asset Processing");
+
                 try {
 
                     if (asset != null) {
@@ -109,6 +103,7 @@ namespace OVE.Service.Core.Processing.Service {
                 }
             } finally {
                 _processing.Release();
+                _logger.LogWarning("released processing lock");
             }
 
         }

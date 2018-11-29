@@ -54,8 +54,9 @@ namespace OVE.Service.Archives {
             
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
-            services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
             services.AddTransient<ArchiveProcessor>();
+            services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
+            
             
             //start the processor microservice 
             services.AddHostedService<AssetProcessingService<ArchiveProcessor,ArchiveProcessingStates>>();
