@@ -13,7 +13,7 @@ You must provide the service with the URL of the asset manager it should registe
 
 ```
   "AssetManagerHostUrl" :  "http://localhost:8181" ,
-  "ServiceHostUrl" : "http://localhost:8182", 
+  "ServiceHostUrl" : "http://localhost:8183", 
 ```
 
 ### Configuring S3
