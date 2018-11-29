@@ -99,7 +99,7 @@ namespace OVE.Service.Archives {
             // get the service description from the AppSettings.json 
             OVEService service = new OVEService();
             Configuration.Bind("Service", service);
-            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() + "/api/ArchiveController/ViewArchive/?id={id}"; 
+            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() + "/api/ArchiveController/ArchiveDetails/?id={id}";
 
             // then update the real processing states
             service.ProcessingStates.Clear();

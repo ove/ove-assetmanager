@@ -59,7 +59,7 @@ namespace OVE.Service.Archives.Controllers {
         /// <param name="id">id of the asset</param>
         /// <returns>view of the archive</returns>
         [HttpGet]
-        [Route("/api/ArchiveController/ViewDetails/{id}.{format?}")]
+        [Route("/api/ArchiveController/ArchiveDetails/{id}.{format?}")]
         public async Task<ActionResult> ArchiveDetails(string id) {
             if (id == null) {
                 return NotFound();
