@@ -14,6 +14,7 @@ using OVE.Service.Archives.Domain;
 using OVE.Service.Core.Extensions;
 using OVE.Service.Core.FileOperations;
 using OVE.Service.Core.FileOperations.S3;
+using OVE.Service.Core.Processing;
 using OVE.Service.Core.Processing.Service;
 using OVE.Service.Core.Services;
 using Swashbuckle.AspNetCore.Swagger;
@@ -57,7 +58,7 @@ namespace OVE.Service.Archives {
             // dependency injection of domain classes 
             services.AddSingleton(Configuration);
             services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
-
+            services.AddTransient<ArchiveProcessor>();
             // use mvc
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
