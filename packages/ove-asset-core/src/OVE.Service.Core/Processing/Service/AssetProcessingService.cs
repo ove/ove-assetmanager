@@ -47,7 +47,7 @@ namespace OVE.Service.Core.Processing.Service {
         }
 
         public Task StartAsync(CancellationToken cancellationToken) {
-            _logger.LogInformation("Async Asset Processor Service is starting.");
+            _logger.LogWarning("Async Asset Processor Service is starting.");
             _timer = new Timer(ProcessAsset, null, TimeSpan.Zero,
                 TimeSpan.FromSeconds(_configuration.GetValue<int>(ProcessingPollSeconds)));
 
@@ -55,7 +55,7 @@ namespace OVE.Service.Core.Processing.Service {
         }
 
         public Task StopAsync(CancellationToken cancellationToken) {
-            _logger.LogInformation("Async Asset Processor Service is stopping.");
+            _logger.LogWarning("Async Asset Processor Service is stopping.");
 
             _timer?.Change(Timeout.Infinite, 0);
 
@@ -72,9 +72,10 @@ namespace OVE.Service.Core.Processing.Service {
         /// <param name="state"></param>
         private async void ProcessAsset(object state) {
             if (!_processing.Wait(10)) {
-                _logger.LogInformation("Tried to fire an asset processor but too many threads already running");
+                _logger.LogWarning("Tried to fire an asset processor but too many threads already running");
                 return;
             }
+            _logger.LogWarning("About to seek an Asset to process");
 
             OVEAssetModel asset = null;
             try {
