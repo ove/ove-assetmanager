@@ -14,6 +14,7 @@ using OVE.Service.AssetManager.DbContexts;
 using OVE.Service.AssetManager.Domain;
 using OVE.Service.Core.FileOperations;
 using OVE.Service.Core.FileOperations.S3;
+using OVE.Service.Core.Formatters;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -65,7 +66,9 @@ namespace OVE.Service.AssetManager {
             services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
 
             // use mvc
-            services.AddMvc()
+            services.AddMvc(options => {
+                    options.InputFormatters.Insert(0, new RawBodyInputFormatter());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddXmlSerializerFormatters().AddJsonOptions(options => {
                     options.SerializerSettings.Formatting = Formatting.Indented;
@@ -148,5 +151,4 @@ namespace OVE.Service.AssetManager {
                 });
         }
     }
-
 }

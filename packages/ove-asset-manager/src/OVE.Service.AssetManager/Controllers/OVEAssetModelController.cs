@@ -56,6 +56,9 @@ namespace OVE.Service.AssetManager.Controllers {
         public async Task<ActionResult<OVEAssetModel>> GetWorkItem(string service) {
             var oveService = _serviceRepository.GetService(service);
             try {
+                if (_context.AssetModels == null) {
+                    return NoContent();
+                }
 
                 var todo = await _context.AssetModels.FirstOrDefaultAsync(a =>a.Service ==oveService.Name && a.ProcessingState == 0);
 
@@ -158,8 +161,6 @@ namespace OVE.Service.AssetManager.Controllers {
                 return NotFound();
             }
             _logger.LogWarning("updating asset meta to "+meta);
-            
-            _logger.LogWarning("body =  asset meta to "+GetBody());
 
             assetModel.AssetMeta = meta;
 
@@ -168,18 +169,6 @@ namespace OVE.Service.AssetManager.Controllers {
             await _context.SaveChangesAsync();
 
             return this.FormatOrView(assetModel);
-        }
-
-        private string GetBody()
-        {
-            string documentContents;
-            
-                using (StreamReader readStream = new StreamReader(Request.Body, Encoding.UTF8))
-                {
-                    documentContents = readStream.ReadToEnd();
-                }
-            
-            return documentContents;
         }
 
         #endregion
