@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
@@ -11,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using OVE.Service.Core.Extensions;
 using OVE.Service.Core.FileOperations;
 using OVE.Service.Core.FileOperations.S3;
 using OVE.Service.Core.Processing.Service;
@@ -96,58 +92,11 @@ namespace OVE.Service.ImageTiles {
 
         }
 
-        /// <summary>
-        /// Register this OVE service with the Asset Manager Service 
-        /// </summary>
-        private async void RegisterServiceWithAssetManager() {
-
-            // get the service description from the AppSettings.json 
-            OVEService service = new OVEService();
-            Configuration.Bind("Service", service);
-            service.ViewIFrameUrl = Configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() + "/api/ImageController/ViewImage/?id={id}"; 
-
-            // then update the real processing states
-            service.ProcessingStates.Clear();
-            foreach (var state in Enum.GetValues(typeof(ImageProcessingStates))) {
-                service.ProcessingStates.Add(((int) state).ToString(), state.ToString());
-            }
-
-            // register the service
-          
-            bool registered = false;
-            while (!registered) {
-                string url = null;
-                try {
-                    // permit environmental variables to be updated 
-                    url = Configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
-                          Configuration.GetValue<string>("RegistrationApi");
-
-                    _logger.LogInformation($"About to register with url {url} we are on {service.ViewIFrameUrl}");
-
-                    using (var client = new HttpClient()) {
-                        var responseMessage = await client.PostAsJsonAsync(url, service);
-
-                        _logger.LogInformation($"Result of Registration was {responseMessage.StatusCode}");
-
-                        registered = responseMessage.StatusCode == HttpStatusCode.OK;
-                    }
-                } catch (Exception e) {
-                    _logger.LogWarning($"Failed to register - exception was {e}");
-                    registered = false;
-                }
-
-                if (!registered) {
-                    _logger.LogWarning($"Failed to register with an Asset Manager on {url}- trying again soon");
-                    Thread.Sleep(10000);
-                }
-            }
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
             _logger.LogInformation("about to start Dependency Injection");
 
-            RegisterServiceWithAssetManager();
+            RegisterService.WithAssetManager(Enum.GetValues(typeof(ImageProcessingStates)), Configuration, _logger);
 
             // error pages
             if (env.IsDevelopment()) {
