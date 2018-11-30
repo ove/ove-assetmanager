@@ -63,7 +63,7 @@ namespace OVE.Service.ImageTiles.Controllers {
 
         private async Task<string> FindAssetById(string project, string name) {
             string url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
-                         _configuration.GetValue<string>("GetAssetByProjectName") +
+                         _configuration.GetValue<string>("GetAssetByProjectNameApi") +
                          "?project=" + project + "&name=" + name;
 
             _logger.LogInformation("about to get on " + url);

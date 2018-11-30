@@ -14,14 +14,14 @@ namespace OVE.Service.Core.Services {
         /// <param name="processingStates"></param>
         /// <param name="configuration"></param>
         /// <param name="logger"></param>
+        /// <param name="viewUrl"></param>
         public static async void WithAssetManager(Array processingStates, IConfiguration configuration,
-            ILogger logger) {
+            ILogger logger, string viewUrl) {
 
             // get the service description from the AppSettings.json 
             OVEService service = new OVEService();
             configuration.Bind("Service", service);
-            service.ViewIFrameUrl = configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() +
-                                    "/api/ImageController/ViewImage/?id={id}";
+            service.ViewIFrameUrl = configuration.GetValue<string>("ServiceHostUrl").RemoveTrailingSlash() + viewUrl;
 
             // then update the real processing states
             service.ProcessingStates.Clear();

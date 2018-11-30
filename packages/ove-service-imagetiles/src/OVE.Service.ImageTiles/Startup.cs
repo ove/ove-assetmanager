@@ -96,7 +96,7 @@ namespace OVE.Service.ImageTiles {
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
             _logger.LogInformation("about to start Dependency Injection");
 
-            RegisterService.WithAssetManager(Enum.GetValues(typeof(ImageProcessingStates)), Configuration, _logger);
+            RegisterService.WithAssetManager(Enum.GetValues(typeof(ImageProcessingStates)), Configuration, _logger, "/api/ImageController/ViewImage/?id={id}");
 
             // error pages
             if (env.IsDevelopment()) {

@@ -95,7 +95,8 @@ namespace OVE.Service.Archives {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
 
-            RegisterService.WithAssetManager(Enum.GetValues(typeof(ArchiveProcessingStates)), Configuration, _logger);
+            RegisterService.WithAssetManager(Enum.GetValues(typeof(ArchiveProcessingStates)), 
+                Configuration, _logger, "/api/ArchiveController/ArchiveDetails/{id}");
 
             // error pages
             if (env.IsDevelopment()) {

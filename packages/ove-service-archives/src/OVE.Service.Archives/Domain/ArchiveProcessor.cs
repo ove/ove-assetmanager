@@ -90,7 +90,7 @@ namespace OVE.Service.Archives.Domain {
 
         private async Task<bool> UpdateAssetMeta(OVEAssetModel asset) {
             var url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
-                      _configuration.GetValue<string>("UpdateMeta") + 
+                      _configuration.GetValue<string>("UpdateMetaApi") + 
                       asset.Id;
 
             _logger.LogInformation("Updating Asset Metadata"); 
