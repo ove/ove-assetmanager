@@ -57,7 +57,6 @@ namespace OVE.Service.Archives {
             services.AddTransient<ArchiveProcessor>();
             services.AddTransient<IAssetFileOperations, S3AssetFileOperations>();
             
-            
             //start the processor microservice 
             services.AddHostedService<AssetProcessingService<ArchiveProcessor,ArchiveProcessingStates>>();
 

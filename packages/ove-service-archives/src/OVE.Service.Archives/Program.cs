@@ -5,14 +5,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace OVE.Service.Archives
-{
-    public class Program
-    {
+namespace OVE.Service.Archives {
+    public class Program {
         public static void Main(string[] args) {
             Startup.GetVersionNumber();
             var host = CreateWebHostBuilder(args).Build();
-            
+
             host.Run();
         }
 
@@ -21,13 +19,14 @@ namespace OVE.Service.Archives
 
             if (!File.Exists(Path.Combine(configBasePath, "appsettings.json"))) {
                 configBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                Console.WriteLine("Changing ContentRoot to "+configBasePath);
+                Console.WriteLine("Changing ContentRoot to " + configBasePath);
             }
 
             return WebHost.CreateDefaultBuilder(args)
-                .UseKestrel(c => c.AddServerHeader = false ) 
+                .UseKestrel(c => c.AddServerHeader = false)
                 .UseContentRoot(configBasePath)
-                .ConfigureAppConfiguration((hostingContext, config) =>  config.AddJsonFile("appsettings.json").AddEnvironmentVariables())
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                    config.AddJsonFile("appsettings.json").AddEnvironmentVariables())
                 .UseStartup<Startup>()
                 .ConfigureLogging((hostingContext, logging) => {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
@@ -35,8 +34,6 @@ namespace OVE.Service.Archives
                     logging.AddDebug();
                 });
         }
-
-
 
     }
 }
