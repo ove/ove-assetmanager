@@ -77,7 +77,16 @@ namespace OVE.Service.Archives.Controllers {
 
             var url = await GetAssetUri(assetModel);
 
-            var files = JsonConvert.DeserializeObject<List<string>>(assetModel.AssetMeta);
+            List<string> files = new List<string>();
+            if (!string.IsNullOrWhiteSpace(assetModel.AssetMeta)) {
+                try {
+                    files  = JsonConvert.DeserializeObject<List<string>>(assetModel.AssetMeta);                    
+                }
+                catch (Exception ex) {
+                    _logger.LogError(ex,"Bad meta data for asset "+id);
+                }
+            }
+                
 
             var avm = new ArchiveViewModel {
                 Id = assetModel.Id,
