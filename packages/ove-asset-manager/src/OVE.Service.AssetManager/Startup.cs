@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OVE.Service.AssetManager.DbContexts;
@@ -18,8 +19,12 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace OVE.Service.AssetManager {
     public class Startup {
-        public Startup(IConfiguration configuration) {
+        private readonly ILogger<Startup> _logger;
+        
+        public Startup(IConfiguration configuration,ILogger<Startup> logger) {
+            _logger = logger;
             Configuration = configuration;
+            _logger.LogInformation("Beginning Dependency injection");
         }
 
         private IConfiguration Configuration { get; }
@@ -39,6 +44,8 @@ namespace OVE.Service.AssetManager {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
+            _logger.LogInformation("Starting to configure Services");
+
             //register a cors policy we can later configure to use
             services.AddCors(o => o.AddPolicy("AllowAll", builder => {
                 builder.AllowAnyOrigin()
@@ -48,8 +55,8 @@ namespace OVE.Service.AssetManager {
 
             // make upload file size unlimited via gui (+ attribute on method to enable API unlimited)
             services.Configure<FormOptions>(x => {
-                x.ValueLengthLimit =  (int) Math.Pow(2,32)-1;
-                x.MultipartBodyLengthLimit = (int) Math.Pow(2,32)-1; // In case of multipart
+                x.ValueLengthLimit =  int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
             });
 
             // dependency injection of domain classes 
@@ -67,13 +74,18 @@ namespace OVE.Service.AssetManager {
                 });
 
             // add the db
+            var connectionString = Configuration.GetValue<string>(MariaDbConnectionString);
+            var version = Configuration.GetValue<string>(MariaDbVersion);
+            _logger.LogInformation($"Configuring db with connection string {connectionString} and version {version}");
             services.AddDbContext<AssetModelContext>(
-                options => options.UseMySql(Configuration.GetValue<string>(MariaDbConnectionString),
-                    mysqlOptions => {
-                        mysqlOptions.ServerVersion(new Version(Configuration.GetValue<string>(MariaDbVersion)),
-                            ServerType.MariaDb); 
-                    }
-                ));
+                options => {
+                    options.UseMySql(connectionString,
+                        mysqlOptions => {
+                            mysqlOptions.ServerVersion(new Version(version),
+                                ServerType.MariaDb);
+                        }
+                    );
+                });
 
             // set up swagger
             services.AddSwaggerGen(options => {
