@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -91,11 +92,13 @@ namespace OVE.Service.Archives.Domain {
         private async Task<bool> UpdateAssetMeta(OVEAssetModel asset) {
             var url = _configuration.GetValue<string>("AssetManagerHostUrl").RemoveTrailingSlash() +
                       _configuration.GetValue<string>("UpdateMetaApi") + 
-                      asset.Id;
+                      asset.Id+".json";
 
             _logger.LogInformation("Updating Asset Metadata"); 
             using (var client = new HttpClient()) {
-                var responseMessage = await client.PostAsync(url, new StringContent(asset.AssetMeta));
+                var body = new StringContent(asset.AssetMeta);
+                body.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                var responseMessage = await client.PostAsync(url,  body );
                 if (responseMessage.StatusCode != HttpStatusCode.OK) {
                     _logger.LogError("Failed to update the asset metadata " + responseMessage.StatusCode);
                     return false;

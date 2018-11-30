@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -155,6 +157,9 @@ namespace OVE.Service.AssetManager.Controllers {
             if (assetModel == null) {
                 return NotFound();
             }
+            _logger.LogWarning("updating asset meta to "+meta);
+            
+            _logger.LogWarning("body =  asset meta to "+GetBody());
 
             assetModel.AssetMeta = meta;
 
@@ -163,6 +168,18 @@ namespace OVE.Service.AssetManager.Controllers {
             await _context.SaveChangesAsync();
 
             return this.FormatOrView(assetModel);
+        }
+
+        private string GetBody()
+        {
+            string documentContents;
+            
+                using (StreamReader readStream = new StreamReader(Request.Body, Encoding.UTF8))
+                {
+                    documentContents = readStream.ReadToEnd();
+                }
+            
+            return documentContents;
         }
 
         #endregion
