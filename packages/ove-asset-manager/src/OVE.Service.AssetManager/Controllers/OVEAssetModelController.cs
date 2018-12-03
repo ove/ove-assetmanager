@@ -151,9 +151,10 @@ namespace OVE.Service.AssetManager.Controllers {
         /// <returns>the ove Asset which has been updated</returns>
         [HttpPost]
         [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
+        [Consumes("application/x-www-form-urlencoded")]
         public async Task<ActionResult<OVEAssetModel>> UpdateAssetMeta(string id,[FromBody] string meta) {
-
-            _logger.LogWarning($"updating asset meta for {id }to {meta}");
+            _logger.LogInformation($"updating meta for {id}");
+            _logger.LogWarning($"updating meta to {meta}");
 
             if (id == null) {
                 return NotFound();
