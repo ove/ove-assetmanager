@@ -67,7 +67,7 @@ namespace OVE.Service.AssetManager {
 
             // use mvc
             services.AddMvc(options => {
-                    options.InputFormatters.Insert(0, new RawBodyInputFormatter());
+                    options.InputFormatters.Insert(0, new RawRequestBodyFormatter());
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddXmlSerializerFormatters().AddJsonOptions(options => {

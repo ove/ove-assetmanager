@@ -145,13 +145,13 @@ namespace OVE.Service.AssetManager.Controllers {
 
         /// <summary>
         /// Update the metadata of an asset.
+        /// please use text/plain content type
         /// </summary>
         /// <param name="id">id of the asset</param>
-        /// <param name="meta">some meta data</param>
+        /// <param name="meta">some meta data - this should be in the body of the post</param>
         /// <returns>the ove Asset which has been updated</returns>
         [HttpPost]
         [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
-        [Consumes("application/x-www-form-urlencoded")]
         public async Task<ActionResult<OVEAssetModel>> UpdateAssetMeta(string id,[FromBody] string meta) {
             _logger.LogInformation($"updating meta for {id}");
             _logger.LogWarning($"updating meta to {meta}");

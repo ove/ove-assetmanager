@@ -97,7 +97,7 @@ namespace OVE.Service.Archives.Domain {
             _logger.LogInformation("Updating Asset Metadata"); 
             using (var client = new HttpClient()) {
                 var body = new StringContent(asset.AssetMeta);
-                body.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                body.Headers.ContentType = MediaTypeHeaderValue.Parse("text/plain");
                 var responseMessage = await client.PostAsync(url,  body );
                 if (responseMessage.StatusCode != HttpStatusCode.OK) {
                     _logger.LogError("Failed to update the asset metadata " + responseMessage.StatusCode);
