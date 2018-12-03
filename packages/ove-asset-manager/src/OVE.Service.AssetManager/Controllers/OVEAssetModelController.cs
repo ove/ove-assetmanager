@@ -152,6 +152,9 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpPost]
         [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
         public async Task<ActionResult<OVEAssetModel>> UpdateAssetMeta(string id,[FromBody] string meta) {
+
+            _logger.LogWarning($"updating asset meta for {id }to {meta}");
+
             if (id == null) {
                 return NotFound();
             }
@@ -160,8 +163,7 @@ namespace OVE.Service.AssetManager.Controllers {
             if (assetModel == null) {
                 return NotFound();
             }
-            _logger.LogWarning("updating asset meta to "+meta);
-
+           
             assetModel.AssetMeta = meta;
 
             _context.Update(assetModel);
