@@ -33,7 +33,9 @@ namespace OVE.Service.ImageTiles.Domain {
 
             // 4) Upload it
             await service.UpdateStatus(asset, (int) ImageProcessingStates.Uploading);
-            await _fileOps.UploadDirectory(localUri,asset);
+            await _fileOps.UploadIndexFileAndDirectory(Path.ChangeExtension(localUri,".dzi"),
+                                                       Path.ChangeExtension(localUri,".dzi").Replace(".dzi","_files/"),
+                                                       asset);
                     
             // 5) delete local files 
             _logger.LogInformation("about to delete files");

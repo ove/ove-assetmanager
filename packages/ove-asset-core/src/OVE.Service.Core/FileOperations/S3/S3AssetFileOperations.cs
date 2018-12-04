@@ -143,24 +143,20 @@ namespace OVE.Service.Core.FileOperations.S3 {
 
         }
 
-        public async Task<bool> UploadDirectory(string file, OVEAssetModel asset) {
-            _logger.LogInformation("about to upload directory " + file);
+        public async Task<bool> UploadIndexFileAndDirectory(string file, string directory, OVEAssetModel asset) {
+            _logger.LogInformation($"about to upload index {file} and directory {directory}");
 
             using (var fileTransferUtility = new TransferUtility(GetS3Client(_configuration))) {
 
-                // upload the .dzi file
+                // upload the index file
                 var assetRootFolder = Path.GetDirectoryName(asset.StorageLocation);
 
-                var fileDirectory = Path.ChangeExtension(file, ".dzi").Replace(".dzi", "_files");
+                var filesKeyPrefix = assetRootFolder + "/" + new DirectoryInfo(directory).Name + "/"; // upload to the right folder
 
-                var filesKeyPrefix =
-                    assetRootFolder + "/" + new DirectoryInfo(fileDirectory).Name + "/"; // upload to the right folder
-
-                TransferUtilityUploadRequest req = new TransferUtilityUploadRequest() {
+                TransferUtilityUploadRequest req = new TransferUtilityUploadRequest {
                     BucketName = asset.Project,
-                    Key = Path.ChangeExtension(asset.StorageLocation, ".dzi"),
-                    FilePath = Path.ChangeExtension(file, ".dzi")
-
+                    Key =  assetRootFolder + "/" + Path.GetFileName(file),
+                    FilePath = file
                 };
                 await fileTransferUtility.UploadAsync(req);
 
@@ -169,7 +165,7 @@ namespace OVE.Service.Core.FileOperations.S3 {
                 TransferUtilityUploadDirectoryRequest request =
                     new TransferUtilityUploadDirectoryRequest() {
                         KeyPrefix = filesKeyPrefix,
-                        Directory = fileDirectory,
+                        Directory = directory,
                         BucketName = asset.Project,
                         SearchOption = SearchOption.AllDirectories,
                         SearchPattern = "*.*"
@@ -177,7 +173,7 @@ namespace OVE.Service.Core.FileOperations.S3 {
 
                 await fileTransferUtility.UploadDirectoryAsync(request);
 
-                _logger.LogInformation("finished upload for "+file);
+                _logger.LogInformation($"finished upload for index {file} and directory {directory}");
 
                 return true;
             }
