@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -153,9 +151,8 @@ namespace OVE.Service.AssetManager.Controllers {
         [HttpPost]
         [Route("/OVEAssetModelController/AssetMeta/{id}.{format?}")]
         public async Task<ActionResult<OVEAssetModel>> UpdateAssetMeta(string id,[FromBody] string meta) {
-            _logger.LogInformation($"updating meta for {id}");
-            _logger.LogWarning($"updating meta to {meta}");
-
+            _logger.LogInformation($"updating meta for {id} to {meta}");
+            
             if (id == null) {
                 return NotFound();
             }
