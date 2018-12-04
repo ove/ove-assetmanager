@@ -47,7 +47,7 @@ namespace OVE.Service.Core.Processing.Service {
         }
 
         public Task StartAsync(CancellationToken cancellationToken) {
-            _logger.LogWarning("Async Asset Processor Service is starting.");
+            _logger.LogInformation("Async Asset Processor Service is starting.");
             _timer = new Timer(ProcessAsset, null, TimeSpan.Zero,
                 TimeSpan.FromSeconds(_configuration.GetValue<int>(ProcessingPollSeconds)));
 
@@ -72,10 +72,10 @@ namespace OVE.Service.Core.Processing.Service {
         /// <param name="state"></param>
         private async void ProcessAsset(object state) {
             if (!_processing.Wait(10)) {
-                _logger.LogWarning("Tried to fire an asset processor but too many threads already running");
+                _logger.LogInformation("Tried to fire an asset processor but too many threads already running");
                 return;
             }
-            _logger.LogWarning("About to seek an Asset to process");
+            _logger.LogInformation("About to seek an Asset to process");
 
             OVEAssetModel asset = null;
             try {
@@ -83,10 +83,10 @@ namespace OVE.Service.Core.Processing.Service {
                 asset = await FindAssetToProcess();
 
                 if (asset == null) {
-                    _logger.LogWarning("no work for an asset Processor, running Processors = " +
+                    _logger.LogInformation("no work for an asset Processor, running Processors = " +
                                            (_maxConcurrent - _processing.CurrentCount - 1));
                 } else {
-                    _logger.LogWarning("Found asset " + asset.Id);
+                    _logger.LogInformation("Found asset " + asset.Id);
 
                     await _processor.Process(this, asset);
                 }
@@ -104,7 +104,7 @@ namespace OVE.Service.Core.Processing.Service {
                 }
             } finally {
                 _processing.Release();
-                _logger.LogWarning("released processing lock");
+                _logger.LogInformation("released processing lock");
             }
 
         }
