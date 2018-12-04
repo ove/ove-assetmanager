@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\AssetStore\**" />
+    <Content Remove="wwwroot\AssetStore\**" />
+    <EmbeddedResource Remove="wwwroot\AssetStore\**" />
+    <None Remove="wwwroot\AssetStore\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\..\package.json" Link="package.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -25,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\AssetStore\" />
     <Folder Include="wwwroot\Database\" />
   </ItemGroup>
 
