@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "@ove/ove-service-Archives",
+      "name": "@ove/ove-service-archives",
       "cwd": ".",
       "kill_timeout": 3000,
       "restart_delay": 3000,
